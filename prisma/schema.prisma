@@ -1,0 +1,101 @@
+// Prisma schema for the Splid-style expense splitting app.
+// Money is stored as integer minor units (cents) to avoid floating point drift.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum SplitType {
+  EQUAL
+  EXACT
+  PERCENTAGE
+  SHARES
+}
+
+model Group {
+  id         String   @id @default(cuid())
+  name       String
+  currency   String   @default("USD")
+  inviteCode String   @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  members  Member[]
+  expenses Expense[]
+  payments Payment[]
+}
+
+model Member {
+  id        String   @id @default(cuid())
+  groupId   String
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  name      String
+  archived  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  expensesPaid  Expense[]      @relation("PaidBy")
+  shares        ExpenseShare[]
+  paymentsFrom  Payment[]      @relation("PaymentFrom")
+  paymentsTo    Payment[]      @relation("PaymentTo")
+
+  @@index([groupId])
+}
+
+model Expense {
+  id          String    @id @default(cuid())
+  groupId     String
+  group       Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  description String
+  amount      Int // total amount in minor units (cents)
+  currency    String
+  date        DateTime  @default(now())
+  paidById    String
+  paidBy      Member    @relation("PaidBy", fields: [paidById], references: [id])
+  splitType   SplitType @default(EQUAL)
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  shares ExpenseShare[]
+
+  @@index([groupId])
+  @@index([paidById])
+}
+
+model ExpenseShare {
+  id         String  @id @default(cuid())
+  expenseId  String
+  expense    Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+  memberId   String
+  member     Member  @relation(fields: [memberId], references: [id])
+  amount     Int // this member's owed amount in minor units, sums to expense.amount
+  rawValue   Int? // raw input for PERCENTAGE (basis points) or SHARES (weight) splits
+
+  @@unique([expenseId, memberId])
+  @@index([memberId])
+}
+
+model Payment {
+  id        String   @id @default(cuid())
+  groupId   String
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  fromId    String
+  from      Member   @relation("PaymentFrom", fields: [fromId], references: [id])
+  toId      String
+  to        Member   @relation("PaymentTo", fields: [toId], references: [id])
+  amount    Int // minor units
+  currency  String
+  date      DateTime @default(now())
+  note      String?
+  createdAt DateTime @default(now())
+
+  @@index([groupId])
+  @@index([fromId])
+  @@index([toId])
+}
