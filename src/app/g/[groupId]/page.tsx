@@ -58,7 +58,12 @@ export default async function GroupDashboardPage({
       ) : (
         <div className="flex flex-col gap-2">
           {group.expenses.map((expense) => (
-            <ExpenseRow key={expense.id} expense={expense} currency={group.currency} />
+            <ExpenseRow
+              key={expense.id}
+              expense={expense}
+              currency={group.currency}
+              myMemberId={myMemberId}
+            />
           ))}
         </div>
       )}

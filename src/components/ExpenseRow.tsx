@@ -10,13 +10,25 @@ type ExpenseWithRelations = Prisma.ExpenseGetPayload<{
 export function ExpenseRow({
   expense,
   currency,
+  myMemberId,
 }: {
   expense: ExpenseWithRelations;
   currency: string;
+  myMemberId: string;
 }) {
   const date = new Date(expense.date);
   const dateLabel = date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
   const participantNames = expense.shares.map((s) => s.member.name).join(", ");
+  const isMine = expense.createdById === myMemberId;
+
+  const details = (
+    <>
+      <p className="truncate font-medium text-slate-900">{expense.description}</p>
+      <p className="truncate text-xs text-slate-500">
+        {expense.paidBy.name} paid {"·"} split with {participantNames}
+      </p>
+    </>
+  );
 
   return (
     <div className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -27,19 +39,20 @@ export function ExpenseRow({
         <span className="text-sm font-bold leading-none">{date.getDate()}</span>
       </div>
 
-      <Link href={`/g/${expense.groupId}/expenses/${expense.id}/edit`} className="min-w-0 flex-1">
-        <p className="truncate font-medium text-slate-900">{expense.description}</p>
-        <p className="truncate text-xs text-slate-500">
-          {expense.paidBy.name} paid {"·"} split with {participantNames}
-        </p>
-      </Link>
+      {isMine ? (
+        <Link href={`/g/${expense.groupId}/expenses/${expense.id}/edit`} className="min-w-0 flex-1">
+          {details}
+        </Link>
+      ) : (
+        <div className="min-w-0 flex-1">{details}</div>
+      )}
 
       <div className="flex flex-shrink-0 items-center gap-3">
         <div className="text-right">
           <p className="font-semibold text-slate-900">{formatMoney(expense.amount, currency)}</p>
           <p className="text-xs text-slate-400">{dateLabel}</p>
         </div>
-        <DeleteExpenseButton groupId={expense.groupId} expenseId={expense.id} />
+        {isMine && <DeleteExpenseButton groupId={expense.groupId} expenseId={expense.id} />}
       </div>
     </div>
   );

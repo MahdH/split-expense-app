@@ -24,6 +24,9 @@ export default async function EditExpensePage({
     }),
   ]);
   if (!group || !expense || expense.groupId !== groupId) notFound();
+  if (expense.createdById !== myMemberId) {
+    redirect(`/g/${groupId}`);
+  }
 
   return (
     <div className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-6 px-4 py-6 sm:py-10">
