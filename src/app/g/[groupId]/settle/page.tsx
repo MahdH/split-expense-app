@@ -5,6 +5,7 @@ import { getGroupOrThrow, getGroupBalances } from "@/lib/group-data";
 import { formatMoney } from "@/lib/money";
 import { RecordPaymentForm } from "@/components/RecordPaymentForm";
 import { DeletePaymentButton } from "@/components/DeletePaymentButton";
+import { SuggestedPayments } from "@/components/SuggestedPayments";
 
 export default async function SettleUpPage({
   params,
@@ -19,7 +20,6 @@ export default async function SettleUpPage({
   if (!group) notFound();
 
   const { simplified } = getGroupBalances(group);
-  const nameOf = (id: string) => group.members.find((m) => m.id === id)?.name ?? "Unknown";
   const members = group.members.filter((m) => !m.archived);
 
   return (
@@ -35,27 +35,12 @@ export default async function SettleUpPage({
         <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-400">
           Suggested payments
         </h2>
-        {simplified.length === 0 ? (
-          <p className="mt-3 text-sm text-slate-500">Everyone is already settled up.</p>
-        ) : (
-          <ul className="mt-3 flex flex-col gap-2">
-            {simplified.map((debt, i) => (
-              <li
-                key={i}
-                className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm"
-              >
-                <span>
-                  <span className="font-medium text-slate-900">{nameOf(debt.fromId)}</span>
-                  <span className="text-slate-400"> pays </span>
-                  <span className="font-medium text-slate-900">{nameOf(debt.toId)}</span>
-                </span>
-                <span className="font-semibold text-slate-900">
-                  {formatMoney(debt.amount, group.currency)}
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
+        <SuggestedPayments
+          groupId={groupId}
+          currency={group.currency}
+          debts={simplified}
+          members={group.members.map((m) => ({ id: m.id, name: m.name }))}
+        />
       </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
