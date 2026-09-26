@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { generateInviteCode } from "@/lib/invite-code";
 import { setMemberIdForGroup, clearMemberIdForGroup } from "@/lib/identity";
 import { revalidatePath } from "next/cache";
+import { checkRateLimit } from "@/lib/rate-limit";
+import { getClientIp } from "@/lib/request-ip";
 
 export async function createGroup(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
@@ -47,6 +49,9 @@ export async function joinGroupByCode(formData: FormData) {
     .trim()
     .toUpperCase();
   if (!code) throw new Error("Invite code is required.");
+
+  const ip = await getClientIp();
+  await checkRateLimit(`join-code:${ip}`, 10, 5 * 60 * 1000);
 
   const group = await prisma.group.findUnique({ where: { inviteCode: code } });
   if (!group) throw new Error("Invite code not found. Double-check the code and try again.");

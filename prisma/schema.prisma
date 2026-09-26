@@ -103,3 +103,13 @@ model Payment {
   @@index([fromId])
   @@index([toId])
 }
+
+// One row per rate-limited attempt (e.g. "join:<ip>"). Checked by counting
+// recent rows for a key; old rows are pruned opportunistically on write.
+model RateLimitHit {
+  id        String   @id @default(cuid())
+  key       String
+  createdAt DateTime @default(now())
+
+  @@index([key, createdAt])
+}
