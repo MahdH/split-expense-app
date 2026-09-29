@@ -1,36 +1,103 @@
 # Splitwise It
 
-A Splid-style group expense splitter: create a group, invite people with a link
-or code, log shared or partial-group expenses with flexible splits, record
-settlement payments, and export everything to CSV. No accounts or passwords —
-just like Splid, joining a group is enough to start using it.
+**Split shared expenses with friends, family or roommates. No accounts, no passwords.**
+
+Splitwise It is a mobile-first web app for keeping track of who paid for what and
+who owes whom. Create a group, share an invite link, log expenses (for everyone or
+just a few people), and settle up when the trip or the month is over. It's modelled
+on the workflow of [Splid](https://splid.app): joining a group is all it takes to
+start using it.
+
+**Live demo:** https://splitexpenses2026.vercel.app
+
+## Screenshots
+
+<table>
+  <tr>
+    <td width="33%" valign="top">
+      <img src="docs/screenshots/01-landing.png" alt="Landing screen"><br>
+      <b>Start or join</b><br>
+      Create a group with a name, your name and a currency, or join an existing one
+      with a 7-character invite code. No sign-up.
+    </td>
+    <td width="33%" valign="top">
+      <img src="docs/screenshots/02-group-home.png" alt="Group home screen"><br>
+      <b>Group home</b><br>
+      The animated banner shows the group total and a live status pill: what you're
+      owed or what you owe. Below it, every expense with its split type. Add one from
+      the first row, or tap <i>Settle up</i>.
+    </td>
+    <td width="33%" valign="top">
+      <img src="docs/screenshots/03-share-invite.png" alt="Share invite sheet"><br>
+      <b>Invite people</b><br>
+      The share button opens a bottom sheet with the invite code and link: copy
+      either, or use the native share sheet on phones.
+    </td>
+  </tr>
+  <tr>
+    <td width="33%" valign="top">
+      <img src="docs/screenshots/04-members-balances.png" alt="Members and balances"><br>
+      <b>Members &amp; balances</b><br>
+      Simplified &ldquo;who owes whom&rdquo; up top, each member's net balance below,
+      and controls to add placeholder members (people who aren't on the app) or
+      remove and restore members.
+    </td>
+    <td width="33%" valign="top">
+      <img src="docs/screenshots/05-add-expense.png" alt="Add expense form"><br>
+      <b>Add an expense</b><br>
+      Pick who paid and who's involved, then split equally, by exact amounts, by
+      percentage or by shares. A live &ldquo;Remaining&rdquo; hint shows what's left to
+      allocate.
+    </td>
+    <td width="33%" valign="top">
+      <img src="docs/screenshots/06-settle-up.png" alt="Settle up"><br>
+      <b>Settle up</b><br>
+      The fewest payments that zero everyone out. Tap <i>Mark paid</i> to record one
+      instantly, or tick several and record them together. Payments made outside the
+      app can be logged by hand, and history keeps a record.
+    </td>
+  </tr>
+  <tr>
+    <td width="33%" valign="top">
+      <img src="docs/screenshots/07-export.png" alt="Export screen"><br>
+      <b>Export</b><br>
+      Download expenses, balances and payment history as CSV, ready for a spreadsheet.
+    </td>
+    <td colspan="2"></td>
+  </tr>
+</table>
 
 ## Features
 
-- **Groups & invites** — create a group and share an invite link or 7-character
+- **Groups & invites**: create a group and share an invite link or 7-character
   code. Anyone with the link can join by picking their name.
-- **No-login identity** — each browser remembers which member you are in each
+- **No-login identity**: each browser remembers which member you are in each
   group via a cookie, so there's nothing to sign up for.
-- **Flexible expenses** — add an expense paid by one member and split it
+- **Flexible expenses**: add an expense paid by one member and split it
   among any subset of the group:
   - **Equally** among selected members
   - **Exact amounts** per person
   - **Percentages** per person
   - **Shares** (weighted split, e.g. 2x vs 1x)
-- **Settle up** — see the minimum set of payments needed to zero out the
-  group's balances (debt simplification), and record real-world payments
-  (cash, Venmo, bank transfer) between members.
-- **Balances** — live net balance per member and "who owes whom."
-- **CSV export** — download expenses, balances/settlements, and payment
+- **Your own expenses only**: anyone can add expenses, but only the person who
+  added one can edit or delete it (enforced on the server, not just hidden in the UI).
+- **Settle up**: see the minimum set of payments needed to zero out the
+  group's balances (debt simplification), record them one tap at a time or in a batch,
+  and log real-world payments (cash, Venmo, bank transfer) between members.
+- **Balances**: live net balance per member and "who owes whom."
+- **CSV export**: download expenses, balances/settlements, and payment
   history as CSV files.
-- **Members management** — add placeholder members (for people not using the
+- **Members management**: add placeholder members (for people not using the
   app), remove/restore members.
+- **Abuse protection**: invite-code lookups are rate-limited (10 attempts per
+  5 minutes per IP, stored in Postgres so it holds across serverless invocations).
 
 ## Tech stack
 
 - [Next.js](https://nextjs.org) (App Router, Server Actions) + TypeScript
 - [Prisma ORM](https://www.prisma.io) + PostgreSQL
 - Tailwind CSS (v4) with [Manrope](https://fonts.google.com/specimen/Manrope)
+- A small custom WebGL shader for the animated banner (no gradient library)
 - Money is stored as integer cents to avoid floating-point rounding issues.
 
 ## Visual style
