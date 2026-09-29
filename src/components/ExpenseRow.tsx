@@ -47,7 +47,11 @@ export function ExpenseRow({
       </div>
 
       {isMine ? (
-        <Link href={`/g/${expense.groupId}/expenses/${expense.id}/edit`} className="min-w-0 flex-1">
+        <Link
+          href={`/g/${expense.groupId}/expenses/${expense.id}/edit`}
+          transitionTypes={["nav-forward"]}
+          className="min-w-0 flex-1"
+        >
           {details}
         </Link>
       ) : (

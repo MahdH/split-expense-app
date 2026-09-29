@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { switchIdentity } from "@/app/actions/groups";
 import { DownloadIcon, MoreIcon, SwitchUserIcon } from "@/components/icons";
+import { usePresence } from "@/components/usePresence";
 
 export function MoreMenu({
   groupId,
@@ -15,6 +16,7 @@ export function MoreMenu({
   glass?: boolean;
 }) {
   const [open, setOpen] = useState(false);
+  const { mounted, closing } = usePresence(open, 130);
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -49,14 +51,17 @@ export function MoreMenu({
         <MoreIcon size={20} />
       </button>
 
-      {open && (
+      {mounted && (
         <div
           role="menu"
-          className="card absolute right-0 z-30 mt-2 w-60 !rounded-[24px] p-1.5 text-ink"
+          className={`card absolute right-0 z-30 mt-2 w-60 origin-top-right !rounded-[24px] p-1.5 text-ink ${
+            closing ? "pointer-events-none animate-pop-out" : "animate-pop-in"
+          }`}
         >
           <Link
             role="menuitem"
             href={`/g/${groupId}/export`}
+            transitionTypes={["nav-forward"]}
             onClick={() => setOpen(false)}
             className={itemClass}
           >

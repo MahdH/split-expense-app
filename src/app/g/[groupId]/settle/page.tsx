@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { RecordPaymentForm } from "@/components/RecordPaymentForm";
 import { DeletePaymentButton } from "@/components/DeletePaymentButton";
 import { SuggestedPayments } from "@/components/SuggestedPayments";
+import { PageMain } from "@/components/PageMain";
 
 export default async function SettleUpPage({
   params,
@@ -23,7 +24,7 @@ export default async function SettleUpPage({
   const members = group.members.filter((m) => !m.archived);
 
   return (
-    <main className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-5 px-4 pb-16 pt-6">
+    <PageMain className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-5 px-4 pb-16 pt-6">
       <PageHeader backHref={`/g/${groupId}`} title="Settle up" subtitle={group.name} />
 
       <section className="card p-5">
@@ -75,6 +76,6 @@ export default async function SettleUpPage({
           </ul>
         </section>
       )}
-    </main>
+    </PageMain>
   );
 }

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getMemberIdForGroup } from "@/lib/identity";
 import { PageHeader } from "@/components/PageHeader";
 import { DownloadIcon } from "@/components/icons";
+import { PageMain } from "@/components/PageMain";
 
 export default async function ExportPage({
   params,
@@ -38,7 +39,7 @@ export default async function ExportPage({
   ];
 
   return (
-    <main className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-5 px-4 pb-16 pt-6">
+    <PageMain className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-5 px-4 pb-16 pt-6">
       <PageHeader
         backHref={`/g/${groupId}`}
         title="Export data"
@@ -67,6 +68,6 @@ export default async function ExportPage({
           </a>
         ))}
       </div>
-    </main>
+    </PageMain>
   );
 }

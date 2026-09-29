@@ -112,6 +112,14 @@ The design tokens live in `src/app/globals.css` (colours, shadows, and the
 - **Buttons** — dark charcoal pills, light-grey circular icon buttons, white chips.
 - **Accent** — orange-coral with peach/rose tag pills; money uses teal (owed to you)
   and crimson (you owe), taken from the banner gradient.
+- **Motion** — short, ease-out, never bouncy. Route changes use the browser View
+  Transitions API through React's `<ViewTransition>` (`src/components/PageMain.tsx`):
+  drilling into a screen slides forward, going back slides back, tab switches follow the
+  tab order, and redirects fade and rise. Group pages have loading skeletons so taps
+  respond instantly. The invite sheet and overflow menu animate in and out, expense
+  rows ease in/out and the rest slide into the gap, and buttons and rows have press
+  feedback. Everything respects `prefers-reduced-motion`; the rules are at the bottom of
+  `src/app/globals.css`.
 - **Banner** — a "Prussian" mesh gradient drawn by a small in-repo WebGL shader
   (`src/components/GradientBanner.tsx`, no external dependency) with a centred white
   title and a frosted status pill. It falls back to a CSS gradient if WebGL is

@@ -4,6 +4,7 @@ import { joinGroupAsExistingMember, joinGroupAsNewMember } from "@/app/actions/g
 import { SubmitButton } from "@/components/SubmitButton";
 import { GradientBanner } from "@/components/GradientBanner";
 import { Avatar } from "@/components/Avatar";
+import { PageMain } from "@/components/PageMain";
 
 export default async function JoinGroupPage({
   params,
@@ -20,7 +21,7 @@ export default async function JoinGroupPage({
   const joinAsExisting = joinGroupAsExistingMember.bind(null, groupId);
 
   return (
-    <main className="mx-auto w-full max-w-xl flex-1 px-4 pb-12 pt-4">
+    <PageMain className="mx-auto w-full max-w-xl flex-1 px-4 pb-12 pt-4">
       <section className="relative overflow-hidden rounded-[32px] shadow-hero">
         <GradientBanner className="absolute inset-0" />
         <div className="pointer-events-none absolute inset-0 bg-[#0b3954]/25" />
@@ -67,6 +68,6 @@ export default async function JoinGroupPage({
           </form>
         </section>
       </div>
-    </main>
+    </PageMain>
   );
 }

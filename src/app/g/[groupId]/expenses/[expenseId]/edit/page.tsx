@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getMemberIdForGroup } from "@/lib/identity";
 import { ExpenseForm } from "@/components/ExpenseForm";
 import { PageHeader } from "@/components/PageHeader";
+import { PageMain } from "@/components/PageMain";
 
 export default async function EditExpensePage({
   params,
@@ -29,7 +30,7 @@ export default async function EditExpensePage({
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-5 px-4 pb-16 pt-6">
+    <PageMain className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-5 px-4 pb-16 pt-6">
       <PageHeader backHref={`/g/${groupId}`} title="Edit expense" subtitle={group.name} />
 
       <ExpenseForm
@@ -53,6 +54,6 @@ export default async function EditExpensePage({
           })),
         }}
       />
-    </main>
+    </PageMain>
   );
 }

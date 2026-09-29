@@ -5,6 +5,8 @@ import { getGroupOrThrow, getGroupBalances } from "@/lib/group-data";
 import { GroupHero } from "@/components/GroupHero";
 import { ExpenseRow } from "@/components/ExpenseRow";
 import { PlusIcon } from "@/components/icons";
+import { ViewTransition } from "react";
+import { PageMain } from "@/components/PageMain";
 
 export default async function GroupHomePage({
   params,
@@ -24,7 +26,7 @@ export default async function GroupHomePage({
   const totalSpent = group.expenses.reduce((sum, e) => sum + e.amount, 0);
 
   return (
-    <main className="mx-auto flex w-full max-w-xl flex-1 flex-col px-4 pb-36 pt-4">
+    <PageMain className="mx-auto flex w-full max-w-xl flex-1 flex-col px-4 pb-36 pt-4">
       <GroupHero
         group={group}
         me={me}
@@ -36,7 +38,7 @@ export default async function GroupHomePage({
       <section className="mt-8 flex flex-col gap-4">
         <div className="flex items-center justify-between px-1">
           <h2 className="text-[22px] font-semibold tracking-tight">Expenses</h2>
-          <Link href={`/g/${groupId}/settle`} className="btn-soft">
+          <Link href={`/g/${groupId}/settle`} transitionTypes={["nav-forward"]} className="btn-soft">
             Settle up
           </Link>
         </div>
@@ -44,7 +46,8 @@ export default async function GroupHomePage({
         <div className="flex flex-col gap-3">
           <Link
             href={`/g/${groupId}/expenses/new`}
-            className="card-quiet flex items-center gap-3.5 border-2 border-dashed border-black/10 p-3.5 pr-4 transition-colors hover:bg-[#efefef]"
+            transitionTypes={["nav-forward"]}
+            className="card-quiet flex items-center gap-3.5 border-2 border-dashed border-black/10 p-3.5 pr-4 transition-[transform,background-color] hover:bg-[#efefef] active:scale-[0.985]"
           >
             <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-b from-[#4b4a4c] to-[#2d2c2e] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_8px_14px_-8px_rgba(23,20,21,0.6)]">
               <PlusIcon size={24} />
@@ -58,16 +61,23 @@ export default async function GroupHomePage({
             </p>
           ) : (
             group.expenses.map((expense) => (
-              <ExpenseRow
+              <ViewTransition
                 key={expense.id}
-                expense={expense}
-                currency={group.currency}
-                myMemberId={myMemberId}
-              />
+                enter="item-in"
+                exit="item-out"
+                update="item-move"
+                default="none"
+              >
+                <ExpenseRow
+                  expense={expense}
+                  currency={group.currency}
+                  myMemberId={myMemberId}
+                />
+              </ViewTransition>
             ))
           )}
         </div>
       </section>
-    </main>
+    </PageMain>
   );
 }

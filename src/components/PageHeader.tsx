@@ -12,7 +12,7 @@ export function PageHeader({
 }) {
   return (
     <header className="flex items-center gap-3">
-      <Link href={backHref} aria-label="Back" className="icon-btn shrink-0">
+      <Link href={backHref} transitionTypes={["nav-back"]} aria-label="Back" className="icon-btn shrink-0">
         <ArrowLeftIcon size={20} />
       </Link>
       <div className="min-w-0">

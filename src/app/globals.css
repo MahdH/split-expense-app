@@ -61,6 +61,11 @@
   /* motion */
   --animate-sheet-up: sheet-up 260ms cubic-bezier(0.22, 1, 0.36, 1);
   --animate-fade-in: fade-in 200ms ease-out;
+  --animate-fade-out: fade-out 180ms ease-in forwards;
+  --animate-sheet-down: sheet-down 200ms cubic-bezier(0.4, 0, 1, 1) forwards;
+  --animate-pop-in: pop-in 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-pop-out: pop-out 120ms ease-in forwards;
+  --animate-shimmer: shimmer 1.6s ease-in-out infinite;
 
   @keyframes sheet-up {
     from {
@@ -71,11 +76,61 @@
     }
   }
 
+  @keyframes sheet-down {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(100%);
+    }
+  }
+
   @keyframes fade-in {
     from {
       opacity: 0;
     }
     to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes pop-in {
+    from {
+      opacity: 0;
+      transform: translateY(-6px) scale(0.94);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes pop-out {
+    from {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-4px) scale(0.96);
+    }
+  }
+
+  @keyframes shimmer {
+    0%,
+    100% {
+      opacity: 0.55;
+    }
+    50% {
       opacity: 1;
     }
   }
@@ -287,6 +342,14 @@
     box-shadow: 0 0 0 3px rgba(244, 98, 58, 0.18);
   }
 
+  /* Loading placeholder blocks (see PageSkeleton). */
+  .skeleton {
+    border-radius: 22px;
+    background: linear-gradient(180deg, #f6f6f6 0%, #e9e9e9 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    animation: var(--animate-shimmer);
+  }
+
   /* Shown behind (and instead of) the animated gradient if WebGL is unavailable. */
   .gradient-fallback {
     background:
@@ -294,5 +357,137 @@
       radial-gradient(100% 85% at 92% 18%, #ff5a5f 0%, transparent 58%),
       radial-gradient(90% 70% at 55% 105%, #c81d25 0%, transparent 62%),
       linear-gradient(160deg, #0b3954 0%, #5b8aa6 60%, #bfd7ea 100%);
+  }
+}
+
+/*
+ * Motion (the style guide's "soft and springy": short, ease-out, nothing bouncy).
+ *
+ * Route changes use the View Transitions API through React's <ViewTransition> (see
+ * PageMain). Links tagged `nav-forward` / `nav-back` slide the page sideways; every other
+ * navigation (redirects after a form, the browser back button) fades and rises gently.
+ * These rules are deliberately outside any @layer so they can target the pseudo-elements.
+ */
+:root {
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+}
+
+/* Only the named page/nav groups animate; the rest of the document just swaps. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* Let taps through while a transition is running. */
+::view-transition {
+  pointer-events: none;
+}
+
+/* Default: fade + rise. */
+::view-transition-old(.page-out) {
+  animation: 120ms var(--ease-in) both vt-fade reverse;
+}
+::view-transition-new(.page-in) {
+  animation:
+    200ms var(--ease-out) 40ms both vt-fade,
+    300ms var(--ease-out) 40ms both vt-rise;
+}
+
+/* Forward: the old page leaves to the left, the new one arrives from the right. */
+::view-transition-old(.nav-forward) {
+  --slide-offset: -28px;
+  animation:
+    150ms var(--ease-in) both vt-fade reverse,
+    150ms var(--ease-in) both vt-slide reverse;
+}
+::view-transition-new(.nav-forward) {
+  --slide-offset: 28px;
+  animation:
+    200ms var(--ease-out) 40ms both vt-fade,
+    300ms var(--ease-out) 40ms both vt-slide;
+}
+
+/* Back: mirrored. */
+::view-transition-old(.nav-back) {
+  --slide-offset: 28px;
+  animation:
+    150ms var(--ease-in) both vt-fade reverse,
+    150ms var(--ease-in) both vt-slide reverse;
+}
+::view-transition-new(.nav-back) {
+  --slide-offset: -28px;
+  animation:
+    200ms var(--ease-out) 40ms both vt-fade,
+    300ms var(--ease-out) 40ms both vt-slide;
+}
+
+/* List rows: new ones ease in, deleted ones shrink away, the rest slide into the gap. */
+::view-transition-new(.item-in) {
+  animation: 260ms var(--ease-out) both vt-item-in;
+}
+::view-transition-old(.item-out) {
+  animation: 160ms var(--ease-in) both vt-item-out;
+}
+::view-transition-group(.item-move) {
+  animation-duration: 300ms;
+  animation-timing-function: var(--ease-out);
+}
+@keyframes vt-item-in {
+  from {
+    opacity: 0;
+    translate: 0 10px;
+    scale: 0.98;
+  }
+}
+@keyframes vt-item-out {
+  to {
+    opacity: 0;
+    scale: 0.96;
+  }
+}
+
+@keyframes vt-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes vt-rise {
+  from {
+    translate: 0 8px;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+@keyframes vt-slide {
+  from {
+    translate: var(--slide-offset) 0;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+/* Reduced motion: no travelling, just instant swaps and calmer overlays. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+  .animate-sheet-up,
+  .animate-sheet-down,
+  .animate-pop-in,
+  .animate-pop-out {
+    animation-duration: 1ms;
+  }
+  .skeleton {
+    animation: none;
   }
 }

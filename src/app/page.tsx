@@ -2,12 +2,13 @@ import { createGroup, joinGroupByCode } from "@/app/actions/groups";
 import { CURRENCIES } from "@/lib/money";
 import { SubmitButton } from "@/components/SubmitButton";
 import { GradientBanner } from "@/components/GradientBanner";
+import { PageMain } from "@/components/PageMain";
 
 const labelClass = "mb-1.5 block text-[13px] font-semibold text-ink-2";
 
 export default function Home() {
   return (
-    <main className="mx-auto w-full max-w-xl flex-1 px-4 pb-12 pt-4">
+    <PageMain className="mx-auto w-full max-w-xl flex-1 px-4 pb-12 pt-4">
       <section className="relative overflow-hidden rounded-[32px] shadow-hero">
         <GradientBanner className="absolute inset-0" />
         <div className="pointer-events-none absolute inset-0 bg-[#0b3954]/25" />
@@ -91,6 +92,6 @@ export default function Home() {
           </form>
         </section>
       </div>
-    </main>
+    </PageMain>
   );
 }

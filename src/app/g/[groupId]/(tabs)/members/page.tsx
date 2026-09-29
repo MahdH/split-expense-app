@@ -6,6 +6,7 @@ import { addPlaceholderMember, archiveMember, unarchiveMember } from "@/app/acti
 import { GroupBalances } from "@/components/GroupBalances";
 import { SubmitButton } from "@/components/SubmitButton";
 import { Avatar } from "@/components/Avatar";
+import { PageMain } from "@/components/PageMain";
 
 export default async function MembersPage({
   params,
@@ -24,7 +25,7 @@ export default async function MembersPage({
   const archived = group.members.filter((m) => m.archived);
 
   return (
-    <main className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-5 px-4 pb-36 pt-6">
+    <PageMain className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-5 px-4 pb-36 pt-6">
       <header className="px-1">
         <h1 className="text-[28px] font-semibold tracking-tight">Members</h1>
         <p className="text-[15px] text-ink-2">{group.name}</p>
@@ -105,6 +106,6 @@ export default async function MembersPage({
           </ul>
         </section>
       )}
-    </main>
+    </PageMain>
   );
 }

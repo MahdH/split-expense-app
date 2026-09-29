@@ -59,7 +59,8 @@ export function GroupHero({
 
       <Link
         href={`/g/${group.id}/members`}
-        className="absolute inset-x-3 bottom-3 z-10 flex items-center gap-2.5 rounded-full border border-white/60 bg-white/60 p-2 pr-3 shadow-[0_12px_26px_-14px_rgba(23,20,21,0.55)] backdrop-blur-xl transition-colors hover:bg-white/75"
+        transitionTypes={["nav-forward"]}
+        className="absolute inset-x-3 bottom-3 z-10 flex items-center gap-2.5 rounded-full border border-white/60 bg-white/60 p-2 pr-3 shadow-[0_12px_26px_-14px_rgba(23,20,21,0.55)] backdrop-blur-xl transition-[transform,background-color] hover:bg-white/75 active:scale-[0.985]"
       >
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#ff8a4c] to-[#e4432a] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]">
           {myBalance === 0 ? <CheckIcon size={20} /> : <WalletIcon size={20} />}

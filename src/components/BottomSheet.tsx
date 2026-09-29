@@ -3,6 +3,7 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { CloseIcon } from "@/components/icons";
+import { usePresence } from "@/components/usePresence";
 
 export function BottomSheet({
   open,
@@ -15,6 +16,7 @@ export function BottomSheet({
   title: string;
   children: ReactNode;
 }) {
+  const { mounted, closing } = usePresence(open, 220);
   const panelRef = useRef<HTMLDivElement>(null);
   const onCloseRef = useRef(onClose);
   useEffect(() => {
@@ -36,17 +38,23 @@ export function BottomSheet({
     };
   }, [open]);
 
-  if (!open) return null;
+  if (!mounted) return null;
 
   // Portal to <body> so the sheet escapes the caller's stacking context and inherited text styles.
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
+    <div
+      className={`fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4 ${
+        closing ? "pointer-events-none" : ""
+      }`}
+    >
       <button
         type="button"
         aria-label="Close"
         tabIndex={-1}
         onClick={onClose}
-        className="absolute inset-0 animate-fade-in bg-ink/45 backdrop-blur-[2px]"
+        className={`absolute inset-0 bg-ink/45 backdrop-blur-[2px] ${
+          closing ? "animate-fade-out" : "animate-fade-in"
+        }`}
       />
       <div
         ref={panelRef}
@@ -54,7 +62,9 @@ export function BottomSheet({
         aria-modal="true"
         aria-label={title}
         tabIndex={-1}
-        className="relative w-full max-w-xl animate-sheet-up rounded-t-[32px] bg-surface p-6 pb-9 text-ink shadow-[0_-20px_50px_-20px_rgba(23,20,21,0.4)] outline-none sm:rounded-[32px]"
+        className={`relative w-full max-w-xl ${
+          closing ? "animate-sheet-down" : "animate-sheet-up"
+        } rounded-t-[32px] bg-surface p-6 pb-9 text-ink shadow-[0_-20px_50px_-20px_rgba(23,20,21,0.4)] outline-none sm:rounded-[32px]`}
       >
         <div className="mx-auto mb-4 h-1.5 w-11 rounded-full bg-black/10 sm:hidden" />
         <div className="mb-4 flex items-center justify-between">

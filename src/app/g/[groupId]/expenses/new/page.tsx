@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getMemberIdForGroup } from "@/lib/identity";
 import { ExpenseForm } from "@/components/ExpenseForm";
 import { PageHeader } from "@/components/PageHeader";
+import { PageMain } from "@/components/PageMain";
 
 export default async function NewExpensePage({
   params,
@@ -20,7 +21,7 @@ export default async function NewExpensePage({
   if (!group) notFound();
 
   return (
-    <main className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-5 px-4 pb-16 pt-6">
+    <PageMain className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-5 px-4 pb-16 pt-6">
       <PageHeader backHref={`/g/${groupId}`} title="Add expense" subtitle={group.name} />
 
       <ExpenseForm
@@ -29,6 +30,6 @@ export default async function NewExpensePage({
         members={group.members.map((m) => ({ id: m.id, name: m.name }))}
         myMemberId={myMemberId}
       />
-    </main>
+    </PageMain>
   );
 }
