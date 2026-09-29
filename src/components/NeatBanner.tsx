@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { NeatGradient, type NeatConfig } from "@firecms/neat";
+// Deep import of the package's unminified build on purpose: its pre-minified entry
+// (`@firecms/neat`) has a `/* @__PURE__ */` comment that Next's production minifier
+// treats as covering a whole statement, deleting the uniform-lookup loop. The result
+// is a solid-red banner in production builds only.
+import { NeatGradient } from "@firecms/neat/dist/NeatGradient";
+import type { NeatConfig } from "@firecms/neat/dist/types";
 
 // "Prussian" preset from the NEAT editor.
 const config: NeatConfig = {
