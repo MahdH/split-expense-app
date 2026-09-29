@@ -10,7 +10,6 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
-    "@firecms/neat": "^1.1.0",
     "@prisma/client": "^6.19.3",
     "nanoid": "^6.0.1",
     "next": "16.3.6",

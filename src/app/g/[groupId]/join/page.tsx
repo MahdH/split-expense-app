@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { joinGroupAsExistingMember, joinGroupAsNewMember } from "@/app/actions/groups";
 import { SubmitButton } from "@/components/SubmitButton";
-import { NeatBanner } from "@/components/NeatBanner";
+import { GradientBanner } from "@/components/GradientBanner";
 import { Avatar } from "@/components/Avatar";
 
 export default async function JoinGroupPage({
@@ -22,7 +22,7 @@ export default async function JoinGroupPage({
   return (
     <main className="mx-auto w-full max-w-xl flex-1 px-4 pb-12 pt-4">
       <section className="relative overflow-hidden rounded-[32px] shadow-hero">
-        <NeatBanner className="absolute inset-0" />
+        <GradientBanner className="absolute inset-0" />
         <div className="pointer-events-none absolute inset-0 bg-[#0b3954]/25" />
         <div className="pointer-events-none relative z-10 px-6 pb-12 pt-14 text-center text-white [text-shadow:0_1px_14px_rgba(11,57,84,0.45)]">
           <p className="text-[15px] font-medium text-white/90">You&rsquo;re joining</p>

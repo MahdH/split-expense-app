@@ -31,7 +31,6 @@ just like Splid, joining a group is enough to start using it.
 - [Next.js](https://nextjs.org) (App Router, Server Actions) + TypeScript
 - [Prisma ORM](https://www.prisma.io) + PostgreSQL
 - Tailwind CSS (v4) with [Manrope](https://fonts.google.com/specimen/Manrope)
-- [NEAT](https://neat.firecms.co) (`@firecms/neat`) for the animated gradient banners
 - Money is stored as integer cents to avoid floating-point rounding issues.
 
 ## Visual style
@@ -46,12 +45,10 @@ The design tokens live in `src/app/globals.css` (colours, shadows, and the
 - **Buttons** — dark charcoal pills, light-grey circular icon buttons, white chips.
 - **Accent** — orange-coral with peach/rose tag pills; money uses teal (owed to you)
   and crimson (you owe), taken from the banner gradient.
-- **Banner** — a NEAT "Prussian" gradient (`src/components/NeatBanner.tsx`) with a
-  centred white title and a frosted status pill. It falls back to a CSS gradient
-  if WebGL is unavailable and pauses its motion for `prefers-reduced-motion`.
-
-NEAT draws a small "NEAT" mark on the free tier. To remove it, buy a license key
-for your domain and set `NEXT_PUBLIC_NEAT_LICENSE_KEY` (see `.env.example`).
+- **Banner** — a "Prussian" mesh gradient drawn by a small in-repo WebGL shader
+  (`src/components/GradientBanner.tsx`, no external dependency) with a centred white
+  title and a frosted status pill. It falls back to a CSS gradient if WebGL is
+  unavailable, pauses when off-screen, and stays still for `prefers-reduced-motion`.
 
 ## Local development
 

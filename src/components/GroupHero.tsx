@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Member } from "@prisma/client";
 import { formatMoney } from "@/lib/money";
-import { NeatBanner } from "@/components/NeatBanner";
+import { GradientBanner } from "@/components/GradientBanner";
 import { ShareSheet } from "@/components/ShareSheet";
 import { MoreMenu } from "@/components/MoreMenu";
 import { CheckIcon, ChevronRightIcon, WalletIcon } from "@/components/icons";
@@ -36,7 +36,7 @@ export function GroupHero({
   return (
     <section className="relative">
       <div className="absolute inset-0 overflow-hidden rounded-[32px] shadow-hero">
-        <NeatBanner className="h-full w-full" />
+        <GradientBanner className="h-full w-full" />
         <div className="pointer-events-none absolute inset-0 bg-[#0b3954]/25" />
       </div>
 
@@ -59,7 +59,7 @@ export function GroupHero({
 
       <Link
         href={`/g/${group.id}/members`}
-        className="absolute bottom-3 left-3 right-12 z-10 flex items-center gap-2.5 rounded-full border border-white/60 bg-white/60 p-2 pr-3 shadow-[0_12px_26px_-14px_rgba(23,20,21,0.55)] backdrop-blur-xl transition-colors hover:bg-white/75"
+        className="absolute inset-x-3 bottom-3 z-10 flex items-center gap-2.5 rounded-full border border-white/60 bg-white/60 p-2 pr-3 shadow-[0_12px_26px_-14px_rgba(23,20,21,0.55)] backdrop-blur-xl transition-colors hover:bg-white/75"
       >
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#ff8a4c] to-[#e4432a] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]">
           {myBalance === 0 ? <CheckIcon size={20} /> : <WalletIcon size={20} />}

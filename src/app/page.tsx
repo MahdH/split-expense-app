@@ -1,7 +1,7 @@
 import { createGroup, joinGroupByCode } from "@/app/actions/groups";
 import { CURRENCIES } from "@/lib/money";
 import { SubmitButton } from "@/components/SubmitButton";
-import { NeatBanner } from "@/components/NeatBanner";
+import { GradientBanner } from "@/components/GradientBanner";
 
 const labelClass = "mb-1.5 block text-[13px] font-semibold text-ink-2";
 
@@ -9,7 +9,7 @@ export default function Home() {
   return (
     <main className="mx-auto w-full max-w-xl flex-1 px-4 pb-12 pt-4">
       <section className="relative overflow-hidden rounded-[32px] shadow-hero">
-        <NeatBanner className="absolute inset-0" />
+        <GradientBanner className="absolute inset-0" />
         <div className="pointer-events-none absolute inset-0 bg-[#0b3954]/25" />
         <div className="pointer-events-none relative z-10 px-6 pb-14 pt-16 text-center text-white [text-shadow:0_1px_14px_rgba(11,57,84,0.45)]">
           <p className="text-[15px] font-medium text-white/90">Welcome to</p>

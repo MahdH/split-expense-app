@@ -287,8 +287,8 @@
     box-shadow: 0 0 0 3px rgba(244, 98, 58, 0.18);
   }
 
-  /* Shown behind (and instead of) the WebGL gradient if it can't start. */
-  .prussian-fallback {
+  /* Shown behind (and instead of) the animated gradient if WebGL is unavailable. */
+  .gradient-fallback {
     background:
       radial-gradient(120% 90% at 12% 0%, #087e8b 0%, transparent 58%),
       radial-gradient(100% 85% at 92% 18%, #ff5a5f 0%, transparent 58%),
