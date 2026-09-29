@@ -22,19 +22,19 @@ export function BottomNav({ groupId }: { groupId: string }) {
   return (
     <nav
       aria-label="Group sections"
-      className="fixed inset-x-0 bottom-0 z-20 border-t border-slate-200 bg-white/95 backdrop-blur"
+      className="fixed inset-x-0 bottom-0 z-20 mx-auto w-full max-w-xl rounded-t-[28px] bg-white/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-14px_32px_-16px_rgba(23,20,21,0.35)] backdrop-blur-xl"
     >
-      <div className="mx-auto flex max-w-3xl">
+      <div className="flex px-6">
         {tabs.map(({ href, label, Icon, active }) => (
           <Link
             key={href}
             href={href}
             aria-current={active ? "page" : undefined}
-            className={`flex flex-1 flex-col items-center gap-1 py-3 text-xs font-semibold ${
-              active ? "text-indigo-600" : "text-slate-400 hover:text-slate-600"
+            className={`flex flex-1 flex-col items-center gap-1 pb-3 pt-3.5 text-xs transition-colors ${
+              active ? "font-bold text-ink" : "font-semibold text-ink-3 hover:text-ink-2"
             }`}
           >
-            <Icon size={22} />
+            <Icon size={24} strokeWidth={active ? 2.1 : 1.75} />
             {label}
           </Link>
         ))}

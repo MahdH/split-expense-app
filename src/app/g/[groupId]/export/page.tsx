@@ -1,7 +1,8 @@
 import { notFound, redirect } from "next/navigation";
-import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getMemberIdForGroup } from "@/lib/identity";
+import { PageHeader } from "@/components/PageHeader";
+import { DownloadIcon } from "@/components/icons";
 
 export default async function ExportPage({
   params,
@@ -19,47 +20,53 @@ export default async function ExportPage({
     {
       href: `/g/${groupId}/export/expenses`,
       title: "Expenses",
+      tag: "CSV",
       description: "Every expense, who paid, and each person's share.",
     },
     {
       href: `/g/${groupId}/export/balances`,
       title: "Balances",
+      tag: "CSV",
       description: "Net balance per member and the suggested settlements (who owes whom).",
     },
     {
       href: `/g/${groupId}/export/payments`,
       title: "Payment history",
+      tag: "CSV",
       description: "All recorded settlement payments between members.",
     },
   ];
 
   return (
-    <div className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-6 px-4 py-6 sm:py-10">
-      <div>
-        <Link href={`/g/${groupId}`} className="text-sm font-medium text-indigo-600 hover:underline">
-          &larr; Back to {group.name}
-        </Link>
-        <h1 className="mt-1 text-2xl font-bold text-slate-900">Export data</h1>
-        <p className="mt-1 text-sm text-slate-500">Download CSV files you can open in any spreadsheet app.</p>
-      </div>
+    <main className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-5 px-4 pb-16 pt-6">
+      <PageHeader
+        backHref={`/g/${groupId}`}
+        title="Export data"
+        subtitle="Download CSV files for any spreadsheet app"
+      />
 
       <div className="flex flex-col gap-3">
         {links.map((l) => (
           <a
             key={l.href}
             href={l.href}
-            className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:border-indigo-300"
+            className="card flex items-center gap-4 p-4 pr-5 transition-transform active:scale-[0.99]"
           >
-            <div>
-              <p className="font-semibold text-slate-900">{l.title}</p>
-              <p className="mt-0.5 text-sm text-slate-500">{l.description}</p>
-            </div>
-            <span className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white">
-              Download CSV
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-surface-2 text-ink shadow-[inset_0_1px_0_#fff]">
+              <DownloadIcon size={22} />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="flex items-center gap-2">
+                <span className="text-[16px] font-semibold">{l.title}</span>
+                <span className="tag">{l.tag}</span>
+              </span>
+              <span className="mt-0.5 block text-[13px] leading-snug text-ink-2">
+                {l.description}
+              </span>
             </span>
           </a>
         ))}
       </div>
-    </div>
+    </main>
   );
 }

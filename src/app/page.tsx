@@ -1,23 +1,33 @@
 import { createGroup, joinGroupByCode } from "@/app/actions/groups";
 import { CURRENCIES } from "@/lib/money";
 import { SubmitButton } from "@/components/SubmitButton";
+import { NeatBanner } from "@/components/NeatBanner";
+
+const labelClass = "mb-1.5 block text-[13px] font-semibold text-ink-2";
 
 export default function Home() {
   return (
-    <div className="flex flex-1 flex-col items-center bg-slate-50 px-4 py-12 sm:py-20">
-      <div className="w-full max-w-md">
-        <div className="mb-10 text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">Splitwise It</h1>
-          <p className="mt-2 text-slate-500">
-            Track shared expenses with friends, family, or roommates — no account needed.
+    <main className="mx-auto w-full max-w-xl flex-1 px-4 pb-12 pt-4">
+      <section className="relative overflow-hidden rounded-[32px] shadow-hero">
+        <NeatBanner className="absolute inset-0" />
+        <div className="pointer-events-none absolute inset-0 bg-[#0b3954]/25" />
+        <div className="pointer-events-none relative z-10 px-6 pb-14 pt-16 text-center text-white [text-shadow:0_1px_14px_rgba(11,57,84,0.45)]">
+          <p className="text-[15px] font-medium text-white/90">Welcome to</p>
+          <h1 className="mt-1 text-[40px] font-semibold leading-tight tracking-tight">
+            Splitwise It
+          </h1>
+          <p className="mx-auto mt-3 max-w-xs text-[15px] leading-relaxed text-white/90">
+            Track shared expenses with friends, family, or roommates &mdash; no account needed.
           </p>
         </div>
+      </section>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900">Start a new group</h2>
-          <form action={createGroup} className="mt-4 flex flex-col gap-3">
+      <div className="mt-4 flex flex-col gap-4">
+        <section className="card p-6">
+          <h2 className="text-xl font-semibold tracking-tight">Start a new group</h2>
+          <form action={createGroup} className="mt-5 flex flex-col gap-4">
             <div>
-              <label htmlFor="name" className="mb-1 block text-sm font-medium text-slate-700">
+              <label htmlFor="name" className={labelClass}>
                 Group name
               </label>
               <input
@@ -25,11 +35,11 @@ export default function Home() {
                 name="name"
                 required
                 placeholder="Cabin trip, Roommates, Italy 2026…"
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                className="field"
               />
             </div>
             <div>
-              <label htmlFor="yourName" className="mb-1 block text-sm font-medium text-slate-700">
+              <label htmlFor="yourName" className={labelClass}>
                 Your name
               </label>
               <input
@@ -37,19 +47,14 @@ export default function Home() {
                 name="yourName"
                 required
                 placeholder="How others will see you"
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                className="field"
               />
             </div>
             <div>
-              <label htmlFor="currency" className="mb-1 block text-sm font-medium text-slate-700">
+              <label htmlFor="currency" className={labelClass}>
                 Currency
               </label>
-              <select
-                id="currency"
-                name="currency"
-                defaultValue="USD"
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-              >
+              <select id="currency" name="currency" defaultValue="USD" className="field">
                 {CURRENCIES.map((c) => (
                   <option key={c} value={c}>
                     {c}
@@ -57,23 +62,21 @@ export default function Home() {
                 ))}
               </select>
             </div>
-            <SubmitButton className="mt-2 w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">
-              Create group
-            </SubmitButton>
+            <SubmitButton className="btn-dark mt-1 w-full">Create group</SubmitButton>
           </form>
-        </div>
+        </section>
 
-        <div className="my-6 flex items-center gap-3 text-xs font-medium uppercase text-slate-400">
-          <div className="h-px flex-1 bg-slate-200" />
+        <div className="flex items-center gap-3 px-2 text-xs font-semibold uppercase tracking-wider text-ink-3">
+          <div className="h-px flex-1 bg-black/10" />
           or
-          <div className="h-px flex-1 bg-slate-200" />
+          <div className="h-px flex-1 bg-black/10" />
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900">Join an existing group</h2>
-          <form action={joinGroupByCode} className="mt-4 flex flex-col gap-3">
+        <section className="card p-6">
+          <h2 className="text-xl font-semibold tracking-tight">Join an existing group</h2>
+          <form action={joinGroupByCode} className="mt-5 flex flex-col gap-4">
             <div>
-              <label htmlFor="code" className="mb-1 block text-sm font-medium text-slate-700">
+              <label htmlFor="code" className={labelClass}>
                 Invite code
               </label>
               <input
@@ -81,15 +84,13 @@ export default function Home() {
                 name="code"
                 required
                 placeholder="e.g. 7K4QXPZ"
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm uppercase tracking-widest outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                className="field uppercase tracking-[0.25em]"
               />
             </div>
-            <SubmitButton className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">
-              Join group
-            </SubmitButton>
+            <SubmitButton className="btn-soft w-full !py-3">Join group</SubmitButton>
           </form>
-        </div>
+        </section>
       </div>
-    </div>
+    </main>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { deletePayment } from "@/app/actions/payments";
+import { TrashIcon } from "@/components/icons";
 
 export function DeletePaymentButton({
   groupId,
@@ -19,9 +20,9 @@ export function DeletePaymentButton({
       <button
         type="submit"
         aria-label="Delete payment"
-        className="rounded p-1 text-slate-300 hover:text-rose-500"
+        className="flex h-9 w-9 items-center justify-center rounded-full text-ink-3 transition-colors hover:bg-neg-soft hover:text-neg"
       >
-        &times;
+        <TrashIcon size={18} />
       </button>
     </form>
   );

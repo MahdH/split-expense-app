@@ -23,6 +23,8 @@ export interface ExpenseFormInitialData {
   shares: { memberId: string; amount: number; rawValue: number | null }[];
 }
 
+const labelClass = "mb-1.5 block text-[13px] font-semibold text-ink-2";
+
 const SPLIT_LABELS: Record<SplitType, string> = {
   EQUAL: "Equally",
   EXACT: "By exact amounts",
@@ -148,29 +150,27 @@ export function ExpenseForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+    <form onSubmit={handleSubmit} className="card flex flex-col gap-5 p-5">
       {error && (
-        <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+        <div className="rounded-2xl bg-neg-soft px-4 py-3 text-sm font-medium text-[#7d1218]">
           {error}
         </div>
       )}
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-slate-700">Description</label>
+        <label className={labelClass}>Description</label>
         <input
           required
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Dinner, groceries, taxi…"
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+          className="field"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">
-            Amount ({currency})
-          </label>
+          <label className={labelClass}>Amount ({currency})</label>
           <input
             required
             type="number"
@@ -179,28 +179,24 @@ export function ExpenseForm({
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             placeholder="0.00"
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            className="field"
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">Date</label>
+          <label className={labelClass}>Date</label>
           <input
             required
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            className="field"
           />
         </div>
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-slate-700">Paid by</label>
-        <select
-          value={paidById}
-          onChange={(e) => setPaidById(e.target.value)}
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-        >
+        <label className={labelClass}>Paid by</label>
+        <select value={paidById} onChange={(e) => setPaidById(e.target.value)} className="field">
           {members.map((m) => (
             <option key={m.id} value={m.id}>
               {m.name}
@@ -210,22 +206,30 @@ export function ExpenseForm({
       </div>
 
       <div>
-        <div className="mb-1 flex items-center justify-between">
-          <label className="block text-sm font-medium text-slate-700">Split between</label>
-          <div className="flex gap-3 text-xs font-medium text-indigo-600">
-            <button type="button" onClick={() => setAllSelected(true)} className="hover:underline">
+        <div className="mb-1.5 flex items-center justify-between">
+          <label className="block text-[13px] font-semibold text-ink-2">Split between</label>
+          <div className="flex gap-1">
+            <button
+              type="button"
+              onClick={() => setAllSelected(true)}
+              className="rounded-full px-2.5 py-1 text-xs font-semibold text-accent-deep hover:bg-peach/30"
+            >
               Everyone
             </button>
-            <button type="button" onClick={() => setAllSelected(false)} className="hover:underline">
+            <button
+              type="button"
+              onClick={() => setAllSelected(false)}
+              className="rounded-full px-2.5 py-1 text-xs font-semibold text-accent-deep hover:bg-peach/30"
+            >
               No one
             </button>
           </div>
         </div>
-        <div className="flex flex-col gap-2 rounded-lg border border-slate-300 p-3">
+        <div className="card-quiet flex flex-col gap-1.5 p-3">
           <select
             value={splitType}
             onChange={(e) => setSplitType(e.target.value as SplitType)}
-            className="mb-2 w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            className="field mb-1.5 !py-2.5"
           >
             {(Object.keys(SPLIT_LABELS) as SplitType[]).map((st) => (
               <option key={st} value={st}>
@@ -239,19 +243,20 @@ export function ExpenseForm({
             return (
               <div
                 key={m.id}
-                className={`flex items-center gap-3 rounded-lg px-2 py-1.5 ${
-                  isSelected ? "bg-indigo-50" : ""
+                className={`flex items-center gap-3 rounded-2xl px-3 py-2.5 transition-colors ${
+                  isSelected ? "bg-white shadow-pill" : ""
                 }`}
               >
                 <input
                   type="checkbox"
                   checked={isSelected}
                   onChange={() => toggleMember(m.id)}
-                  className="h-4 w-4 rounded border-slate-300 text-indigo-600"
+                  aria-label={`Include ${m.name}`}
+                  className="h-[18px] w-[18px] rounded"
                 />
-                <span className="flex-1 text-sm text-slate-800">{m.name}</span>
+                <span className="flex-1 text-[15px] font-medium">{m.name}</span>
                 {isSelected && splitType !== "EQUAL" && (
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1.5">
                     <input
                       type="number"
                       step={splitType === "SHARES" ? "1" : "0.01"}
@@ -261,9 +266,9 @@ export function ExpenseForm({
                         setValues((prev) => ({ ...prev, [m.id]: e.target.value }))
                       }
                       placeholder={splitType === "SHARES" ? "1" : "0.00"}
-                      className="w-24 rounded-md border border-slate-300 px-2 py-1 text-right text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                      className="field w-24 !rounded-xl !px-3 !py-1.5 text-right text-sm"
                     />
-                    <span className="w-4 text-xs text-slate-400">
+                    <span className="w-4 text-xs font-semibold text-ink-3">
                       {splitType === "PERCENTAGE" ? "%" : splitType === "EXACT" ? "" : "x"}
                     </span>
                   </div>
@@ -273,27 +278,23 @@ export function ExpenseForm({
           })}
         </div>
         {splitCheck && (
-          <p className={`mt-1 text-xs ${splitCheck.ok ? "text-emerald-600" : "text-rose-500"}`}>
+          <p className={`mt-2 px-1 text-xs font-semibold ${splitCheck.ok ? "text-pos" : "text-neg"}`}>
             {splitCheck.label}
           </p>
         )}
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-slate-700">Notes (optional)</label>
+        <label className={labelClass}>Notes (optional)</label>
         <textarea
           value={notes ?? ""}
           onChange={(e) => setNotes(e.target.value)}
           rows={2}
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+          className="field"
         />
       </div>
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
-      >
+      <button type="submit" disabled={pending} className="btn-dark w-full">
         {pending ? "Saving…" : initialData ? "Save changes" : "Add expense"}
       </button>
     </form>

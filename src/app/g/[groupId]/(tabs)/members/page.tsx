@@ -5,6 +5,7 @@ import { formatMoney } from "@/lib/money";
 import { addPlaceholderMember, archiveMember, unarchiveMember } from "@/app/actions/groups";
 import { GroupBalances } from "@/components/GroupBalances";
 import { SubmitButton } from "@/components/SubmitButton";
+import { Avatar } from "@/components/Avatar";
 
 export default async function MembersPage({
   params,
@@ -23,37 +24,33 @@ export default async function MembersPage({
   const archived = group.members.filter((m) => m.archived);
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-6 pb-28 sm:py-10">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">Members</h1>
-        <p className="text-sm text-slate-500">{group.name}</p>
-      </div>
+    <main className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-5 px-4 pb-36 pt-6">
+      <header className="px-1">
+        <h1 className="text-[28px] font-semibold tracking-tight">Members</h1>
+        <p className="text-[15px] text-ink-2">{group.name}</p>
+      </header>
 
       <GroupBalances currency={group.currency} members={group.members} simplified={simplified} />
 
-      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-400">Active</h2>
-        <ul className="mt-3 flex flex-col divide-y divide-slate-100">
+      <section className="card p-5">
+        <h2 className="text-lg font-semibold tracking-tight">Active</h2>
+        <ul className="mt-2 flex flex-col divide-y divide-black/5">
           {active.map((m) => {
             const balance = balances.get(m.id) ?? 0;
             return (
-              <li key={m.id} className="flex items-center justify-between gap-3 py-3">
+              <li key={m.id} className="flex items-center justify-between gap-3 py-3.5">
                 <div className="flex min-w-0 items-center gap-3">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-700">
-                    {m.name.slice(0, 1).toUpperCase()}
-                  </span>
+                  <Avatar name={m.name} />
                   <div className="min-w-0">
-                    <p className="truncate font-medium text-slate-900">
+                    <p className="truncate text-[16px] font-semibold">
                       {m.name}{" "}
-                      {m.id === myMemberId && <span className="text-xs text-slate-400">(you)</span>}
+                      {m.id === myMemberId && (
+                        <span className="text-xs font-medium text-ink-3">(you)</span>
+                      )}
                     </p>
-                    <p
-                      className={`text-xs font-medium ${
-                        balance === 0
-                          ? "text-slate-400"
-                          : balance > 0
-                            ? "text-emerald-600"
-                            : "text-rose-600"
+                    <span
+                      className={`tag mt-1 ${
+                        balance === 0 ? "tag-neutral" : balance > 0 ? "tag-pos" : "tag-neg"
                       }`}
                     >
                       {balance === 0
@@ -61,14 +58,14 @@ export default async function MembersPage({
                         : balance > 0
                           ? `Gets back ${formatMoney(balance, group.currency)}`
                           : `Owes ${formatMoney(-balance, group.currency)}`}
-                    </p>
+                    </span>
                   </div>
                 </div>
                 {m.id !== myMemberId && (
                   <form action={archiveMember.bind(null, groupId, m.id)}>
                     <button
                       type="submit"
-                      className="text-xs font-medium text-slate-400 hover:text-rose-500"
+                      className="rounded-full px-3 py-1.5 text-[13px] font-semibold text-ink-3 transition-colors hover:bg-neg-soft hover:text-neg"
                     >
                       Remove
                     </button>
@@ -79,39 +76,35 @@ export default async function MembersPage({
           })}
         </ul>
 
-        <form action={addPlaceholderMember.bind(null, groupId)} className="mt-4 flex gap-2">
+        <form action={addPlaceholderMember.bind(null, groupId)} className="mt-3 flex gap-2">
           <input
             name="name"
             required
-            placeholder="Add a member who isn't here (e.g. paying offline)"
-            className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            placeholder="Add a member who isn't here"
+            aria-label="New member name"
+            className="field min-w-0 flex-1"
           />
-          <SubmitButton className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">
-            Add
-          </SubmitButton>
+          <SubmitButton className="btn-dark shrink-0 !px-6">Add</SubmitButton>
         </form>
-      </div>
+      </section>
 
       {archived.length > 0 && (
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-400">Removed</h2>
-          <ul className="mt-3 flex flex-col divide-y divide-slate-100">
+        <section className="card p-5">
+          <h2 className="text-lg font-semibold tracking-tight">Removed</h2>
+          <ul className="mt-2 flex flex-col divide-y divide-black/5">
             {archived.map((m) => (
               <li key={m.id} className="flex items-center justify-between py-3">
-                <span className="text-slate-500">{m.name}</span>
+                <span className="text-[15px] text-ink-2">{m.name}</span>
                 <form action={unarchiveMember.bind(null, groupId, m.id)}>
-                  <button
-                    type="submit"
-                    className="text-xs font-medium text-indigo-600 hover:underline"
-                  >
+                  <button type="submit" className="btn-soft !px-4 !py-1.5">
                     Restore
                   </button>
                 </form>
               </li>
             ))}
           </ul>
-        </div>
+        </section>
       )}
-    </div>
+    </main>
   );
 }

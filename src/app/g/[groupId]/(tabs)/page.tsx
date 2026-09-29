@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { getMemberIdForGroup } from "@/lib/identity";
 import { getGroupOrThrow, getGroupBalances } from "@/lib/group-data";
-import { GroupHeader } from "@/components/GroupHeader";
+import { GroupHero } from "@/components/GroupHero";
 import { ExpenseRow } from "@/components/ExpenseRow";
 import { PlusIcon } from "@/components/icons";
 
@@ -21,35 +21,39 @@ export default async function GroupHomePage({
 
   const { balances } = getGroupBalances(group);
   const myBalance = balances.get(myMemberId) ?? 0;
+  const totalSpent = group.expenses.reduce((sum, e) => sum + e.amount, 0);
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-6 pb-28 sm:py-10">
-      <GroupHeader group={group} me={me} myBalance={myBalance} />
+    <main className="mx-auto flex w-full max-w-xl flex-1 flex-col px-4 pb-36 pt-4">
+      <GroupHero
+        group={group}
+        me={me}
+        myBalance={myBalance}
+        totalSpent={totalSpent}
+        expenseCount={group.expenses.length}
+      />
 
-      <section className="flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-900">Expenses</h2>
-          <Link
-            href={`/g/${groupId}/settle`}
-            className="rounded-lg border border-slate-300 px-3.5 py-1.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-          >
+      <section className="mt-8 flex flex-col gap-4">
+        <div className="flex items-center justify-between px-1">
+          <h2 className="text-[22px] font-semibold tracking-tight">Expenses</h2>
+          <Link href={`/g/${groupId}/settle`} className="btn-soft">
             Settle up
           </Link>
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3">
           <Link
             href={`/g/${groupId}/expenses/new`}
-            className="flex items-center gap-3 rounded-xl border border-dashed border-indigo-300 bg-indigo-50/50 p-4 text-sm font-semibold text-indigo-700 hover:bg-indigo-50"
+            className="card-quiet flex items-center gap-3.5 border-2 border-dashed border-black/10 p-3.5 pr-4 transition-colors hover:bg-[#efefef]"
           >
-            <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-indigo-600 text-white">
-              <PlusIcon size={20} />
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-b from-[#4b4a4c] to-[#2d2c2e] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_8px_14px_-8px_rgba(23,20,21,0.6)]">
+              <PlusIcon size={24} />
             </span>
-            Add expense
+            <span className="text-[16px] font-semibold">Add expense</span>
           </Link>
 
           {group.expenses.length === 0 ? (
-            <p className="px-1 py-4 text-center text-sm text-slate-500">
+            <p className="px-2 py-5 text-center text-sm text-ink-2">
               No expenses yet. Add your first one to get started.
             </p>
           ) : (
@@ -64,6 +68,6 @@ export default async function GroupHomePage({
           )}
         </div>
       </section>
-    </div>
+    </main>
   );
 }

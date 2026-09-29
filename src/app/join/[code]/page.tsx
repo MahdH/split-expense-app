@@ -16,10 +16,12 @@ export default async function JoinByCodePage({
   } catch (err) {
     if (err instanceof RateLimitError) {
       return (
-        <div className="flex flex-1 flex-col items-center justify-center gap-2 px-4 py-20 text-center">
-          <h1 className="text-xl font-semibold text-slate-900">Too many attempts</h1>
-          <p className="max-w-md text-sm text-slate-500">{err.message}</p>
-        </div>
+        <main className="mx-auto flex w-full max-w-xl flex-1 flex-col items-center justify-center gap-3 px-6 py-20 text-center">
+          <div className="card w-full p-8">
+            <h1 className="text-xl font-semibold tracking-tight">Too many attempts</h1>
+            <p className="mx-auto mt-2 max-w-sm text-[15px] text-ink-2">{err.message}</p>
+          </div>
+        </main>
       );
     }
     throw err;

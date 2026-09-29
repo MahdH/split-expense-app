@@ -14,32 +14,32 @@ export function GroupBalances({
   const nameOf = (id: string) => members.find((m) => m.id === id)?.name ?? "Unknown";
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-400">
-        Group balances
-      </h2>
+    <section className="card p-5">
+      <h2 className="text-lg font-semibold tracking-tight">Group balances</h2>
 
       {simplified.length === 0 ? (
-        <p className="mt-3 text-sm text-slate-500">Everyone is settled up. Nice!</p>
+        <p className="card-quiet mt-3 px-4 py-3.5 text-[15px] text-ink-2">
+          Everyone is settled up. Nice!
+        </p>
       ) : (
         <ul className="mt-3 flex flex-col gap-2">
           {simplified.map((debt, i) => (
             <li
               key={i}
-              className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm"
+              className="card-quiet flex items-center justify-between gap-3 px-4 py-3.5 text-[15px]"
             >
-              <span>
-                <span className="font-medium text-slate-900">{nameOf(debt.fromId)}</span>
-                <span className="text-slate-400"> owes </span>
-                <span className="font-medium text-slate-900">{nameOf(debt.toId)}</span>
+              <span className="min-w-0 truncate">
+                <span className="font-semibold">{nameOf(debt.fromId)}</span>
+                <span className="text-ink-2"> owes </span>
+                <span className="font-semibold">{nameOf(debt.toId)}</span>
               </span>
-              <span className="font-semibold text-slate-900">
+              <span className="shrink-0 font-semibold tabular-nums">
                 {formatMoney(debt.amount, currency)}
               </span>
             </li>
           ))}
         </ul>
       )}
-    </div>
+    </section>
   );
 }

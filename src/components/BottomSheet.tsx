@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { CloseIcon } from "@/components/icons";
 
 export function BottomSheet({
@@ -37,14 +38,15 @@ export function BottomSheet({
 
   if (!open) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
+  // Portal to <body> so the sheet escapes the caller's stacking context and inherited text styles.
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
       <button
         type="button"
         aria-label="Close"
         tabIndex={-1}
         onClick={onClose}
-        className="absolute inset-0 animate-fade-in bg-black/40"
+        className="absolute inset-0 animate-fade-in bg-ink/45 backdrop-blur-[2px]"
       />
       <div
         ref={panelRef}
@@ -52,22 +54,18 @@ export function BottomSheet({
         aria-modal="true"
         aria-label={title}
         tabIndex={-1}
-        className="relative w-full max-w-lg animate-sheet-up rounded-t-3xl bg-white p-5 pb-8 shadow-xl outline-none sm:rounded-3xl"
+        className="relative w-full max-w-xl animate-sheet-up rounded-t-[32px] bg-surface p-6 pb-9 text-ink shadow-[0_-20px_50px_-20px_rgba(23,20,21,0.4)] outline-none sm:rounded-[32px]"
       >
-        <div className="mx-auto mb-3 h-1.5 w-10 rounded-full bg-slate-200 sm:hidden" />
+        <div className="mx-auto mb-4 h-1.5 w-11 rounded-full bg-black/10 sm:hidden" />
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close"
-            className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
-          >
-            <CloseIcon size={20} />
+          <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
+          <button type="button" onClick={onClose} aria-label="Close" className="icon-btn h-9 w-9">
+            <CloseIcon size={18} />
           </button>
         </div>
         {children}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
