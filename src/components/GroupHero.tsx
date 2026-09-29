@@ -40,7 +40,7 @@ export function GroupHero({
         <div className="pointer-events-none absolute inset-0 bg-[#0b3954]/25" />
       </div>
 
-      <div className="pointer-events-none relative z-10 px-5 pb-[8.25rem] pt-5 text-center text-white">
+      <div className="pointer-events-none relative z-10 px-5 pb-[6.75rem] pt-5 text-center text-white">
         <div className="pointer-events-auto flex justify-end gap-2">
           <ShareSheet glass groupName={group.name} inviteCode={group.inviteCode} />
           <MoreMenu glass groupId={group.id} memberName={me.name} />
@@ -59,7 +59,7 @@ export function GroupHero({
 
       <Link
         href={`/g/${group.id}/members`}
-        className="absolute inset-x-3 bottom-9 z-10 flex items-center gap-3 rounded-full border border-white/60 bg-white/60 p-2 pr-4 shadow-[0_12px_26px_-14px_rgba(23,20,21,0.55)] backdrop-blur-xl transition-colors hover:bg-white/75"
+        className="absolute bottom-3 left-3 right-12 z-10 flex items-center gap-2.5 rounded-full border border-white/60 bg-white/60 p-2 pr-3 shadow-[0_12px_26px_-14px_rgba(23,20,21,0.55)] backdrop-blur-xl transition-colors hover:bg-white/75"
       >
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#ff8a4c] to-[#e4432a] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]">
           {myBalance === 0 ? <CheckIcon size={20} /> : <WalletIcon size={20} />}
