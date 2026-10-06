@@ -132,3 +132,11 @@ export const WalletIcon = (p: IconProps) => (
     <circle cx="16" cy="13.5" r="1.1" fill="currentColor" stroke="none" />
   </Svg>
 );
+
+export const SuitcaseIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <rect x="3" y="7" width="18" height="13" rx="2.5" />
+    <path d="M8.5 7V5.5A1.5 1.5 0 0 1 10 4h4a1.5 1.5 0 0 1 1.5 1.5V7" />
+    <path d="M3 13h18" />
+  </Svg>
+);

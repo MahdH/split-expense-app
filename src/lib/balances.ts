@@ -54,6 +54,24 @@ export function computeBalances(
 }
 
 /**
+ * What the trip cost each member in total, in cents: the sum of their share of every
+ * expense. It ignores who paid and any settlement payments, so it never changes when
+ * people settle up.
+ */
+export function computeTripCosts(
+  memberIds: string[],
+  expenses: Pick<BalanceExpenseInput, "shares">[]
+): Map<string, number> {
+  const cost = new Map<string, number>(memberIds.map((id) => [id, 0]));
+  for (const expense of expenses) {
+    for (const share of expense.shares) {
+      cost.set(share.memberId, (cost.get(share.memberId) ?? 0) + share.amount);
+    }
+  }
+  return cost;
+}
+
+/**
  * Greedy min-transaction debt simplification: repeatedly matches the largest
  * creditor with the largest debtor until all balances are settled. Produces the
  * minimum number of "who pays whom" transactions to zero out the group.

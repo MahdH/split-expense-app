@@ -1,5 +1,5 @@
 import { prisma } from "./prisma";
-import { computeBalances, simplifyDebts } from "./balances";
+import { computeBalances, computeTripCosts, simplifyDebts } from "./balances";
 
 export async function getGroupOrThrow(groupId: string) {
   const group = await prisma.group.findUnique({
@@ -35,4 +35,13 @@ export function getGroupBalances(group: GroupWithData) {
   );
   const simplified = simplifyDebts(balances);
   return { balances, simplified };
+}
+
+export function getGroupTripCosts(group: GroupWithData) {
+  return computeTripCosts(
+    group.members.map((m) => m.id),
+    group.expenses.map((e) => ({
+      shares: e.shares.map((s) => ({ memberId: s.memberId, amount: s.amount })),
+    }))
+  );
 }

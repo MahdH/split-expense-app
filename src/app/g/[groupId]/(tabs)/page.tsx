@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { getMemberIdForGroup } from "@/lib/identity";
-import { getGroupOrThrow, getGroupBalances } from "@/lib/group-data";
+import { getGroupOrThrow, getGroupBalances, getGroupTripCosts } from "@/lib/group-data";
 import { GroupHero } from "@/components/GroupHero";
 import { ExpenseRow } from "@/components/ExpenseRow";
 import { PlusIcon } from "@/components/icons";
@@ -23,6 +23,7 @@ export default async function GroupHomePage({
 
   const { balances } = getGroupBalances(group);
   const myBalance = balances.get(myMemberId) ?? 0;
+  const myTripCost = getGroupTripCosts(group).get(myMemberId) ?? 0;
   const totalSpent = group.expenses.reduce((sum, e) => sum + e.amount, 0);
 
   return (
@@ -31,6 +32,7 @@ export default async function GroupHomePage({
         group={group}
         me={me}
         myBalance={myBalance}
+        myTripCost={myTripCost}
         totalSpent={totalSpent}
         expenseCount={group.expenses.length}
       />

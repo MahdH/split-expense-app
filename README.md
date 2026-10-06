@@ -85,6 +85,9 @@ start using it.
   group's balances (debt simplification), record them one tap at a time or in a batch,
   and log real-world payments (cash, Venmo, bank transfer) between members.
 - **Balances**: live net balance per member and "who owes whom."
+- **Trip cost**: each member's total share of every expense, shown in the home banner
+  and on the Members tab. It ignores who paid and any settlement payments, so it
+  answers "what did this trip cost me?" and never changes when people settle up.
 - **CSV export**: download expenses, balances/settlements, and payment
   history as CSV files.
 - **Members management**: add placeholder members (for people not using the

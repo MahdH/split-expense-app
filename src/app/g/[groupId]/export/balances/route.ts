@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getGroupOrThrow, getGroupBalances } from "@/lib/group-data";
+import { getGroupOrThrow, getGroupBalances, getGroupTripCosts } from "@/lib/group-data";
 import { fromCents } from "@/lib/money";
 import { toCsv } from "@/lib/csv";
 
@@ -12,12 +12,14 @@ export async function GET(
   if (!group) return new NextResponse("Group not found", { status: 404 });
 
   const { balances, simplified } = getGroupBalances(group);
+  const tripCosts = getGroupTripCosts(group);
   const nameOf = (id: string) => group.members.find((m) => m.id === id)?.name ?? "Unknown";
 
   const netRows = group.members.map((m) => [
     m.name,
     fromCents(balances.get(m.id) ?? 0).toFixed(2),
     (balances.get(m.id) ?? 0) === 0 ? "settled" : (balances.get(m.id) ?? 0) > 0 ? "is owed" : "owes",
+    fromCents(tripCosts.get(m.id) ?? 0).toFixed(2),
   ]);
 
   const settleRows = simplified.map((d) => [
@@ -28,7 +30,7 @@ export async function GET(
 
   const csv =
     `Net balances (${group.currency})\r\n` +
-    toCsv(["Member", "Net balance", "Status"], netRows) +
+    toCsv(["Member", "Net balance", "Status", "Trip cost"], netRows) +
     `\r\nSuggested settlements (${group.currency})\r\n` +
     toCsv(["From", "To", "Amount"], settleRows);
 

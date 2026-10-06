@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { getMemberIdForGroup } from "@/lib/identity";
-import { getGroupOrThrow, getGroupBalances } from "@/lib/group-data";
+import { getGroupOrThrow, getGroupBalances, getGroupTripCosts } from "@/lib/group-data";
 import { formatMoney } from "@/lib/money";
 import { addPlaceholderMember, archiveMember, unarchiveMember } from "@/app/actions/groups";
 import { GroupBalances } from "@/components/GroupBalances";
@@ -21,6 +21,7 @@ export default async function MembersPage({
   if (!group) notFound();
 
   const { balances, simplified } = getGroupBalances(group);
+  const tripCosts = getGroupTripCosts(group);
   const active = group.members.filter((m) => !m.archived);
   const archived = group.members.filter((m) => m.archived);
 
@@ -60,6 +61,9 @@ export default async function MembersPage({
                           ? `Gets back ${formatMoney(balance, group.currency)}`
                           : `Owes ${formatMoney(-balance, group.currency)}`}
                     </span>
+                    <p className="mt-1 text-[12.5px] font-medium tabular-nums text-ink-3">
+                      Trip cost {formatMoney(tripCosts.get(m.id) ?? 0, group.currency)}
+                    </p>
                   </div>
                 </div>
                 {m.id !== myMemberId && (
