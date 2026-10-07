@@ -11,7 +11,7 @@ export async function GET(
   const group = await getGroupOrThrow(groupId);
   if (!group) return new NextResponse("Group not found", { status: 404 });
 
-  const { balances, simplified } = getGroupBalances(group);
+  const { balances, simplified, direct } = getGroupBalances(group);
   const tripCosts = getGroupTripCosts(group);
   const nameOf = (id: string) => group.members.find((m) => m.id === id)?.name ?? "Unknown";
 
@@ -28,11 +28,19 @@ export async function GET(
     fromCents(d.amount).toFixed(2),
   ]);
 
+  const directRows = direct.map((d) => [
+    nameOf(d.fromId),
+    nameOf(d.toId),
+    fromCents(d.amount).toFixed(2),
+  ]);
+
   const csv =
     `Net balances (${group.currency})\r\n` +
     toCsv(["Member", "Net balance", "Status", "Trip cost"], netRows) +
-    `\r\nSuggested settlements (${group.currency})\r\n` +
-    toCsv(["From", "To", "Amount"], settleRows);
+    `\r\nSuggested settlements, fewest payments (${group.currency})\r\n` +
+    toCsv(["From", "To", "Amount"], settleRows) +
+    `\r\nWho owes whom directly, netted per pair (${group.currency})\r\n` +
+    toCsv(["From", "To", "Amount"], directRows);
 
   return new NextResponse(csv, {
     headers: {

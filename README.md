@@ -194,10 +194,25 @@ Every expense has a `splitType`:
 | Shares | A weight per participant (e.g. 2 vs 1); the total is divided proportionally |
 
 Balances are computed by summing, per member, what they paid minus what they
-owe across all expenses, plus/minus any settlement payments. "Settle up"
-then runs a greedy debt-simplification algorithm (largest creditor paired
-with largest debtor, repeated) to produce the minimum number of payments
-needed to zero everyone out.
+owe across all expenses, plus/minus any settlement payments. Money is integer cents
+throughout, and when a split doesn't divide evenly the spare cents go to a randomly
+chosen run of people (chosen once, when the expense is saved) so it isn't always the
+same person.
+
+"Settle up" offers two ways to square the group, and both zero everyone out:
+
+- **Fewest payments** finds the smallest possible number of transfers. A set of people
+  whose balances add up to zero can settle among themselves with one fewer payment than
+  there are people, so the minimum is the number of people with a balance minus the most
+  separate zero-sum groups they can be split into. That split is found exactly (up to 13
+  people with a balance; the greedy largest-creditor/largest-debtor matching takes over
+  beyond that).
+- **Between each pair** shows what each person owes each other person directly, after
+  netting everything between the two of them. It can need more payments, but each one
+  matches who actually paid for whom.
+
+Recording a suggested payment is checked on the server against the group's current
+balances, so two people tapping the same suggestion can't record it twice.
 
 ## Identity model
 

@@ -24,13 +24,18 @@ export function formatMoney(cents: number, currency: string, locale = "en-US"): 
 
 /**
  * Splits `total` (in cents) into `count` integer cent parts that sum exactly to
- * `total`, distributing the remainder cent-by-cent starting from the first parts.
+ * `total`. The leftover cents go to `remainder` consecutive parts starting at `offset`
+ * (wrapping around), so callers can rotate who gets them instead of it always being
+ * the first person.
  */
-export function splitEvenly(total: number, count: number): number[] {
+export function splitEvenly(total: number, count: number, offset = 0): number[] {
   if (count <= 0) return [];
   const base = Math.floor(total / count);
   const remainder = total - base * count;
-  return Array.from({ length: count }, (_, i) => base + (i < remainder ? 1 : 0));
+  return Array.from({ length: count }, (_, i) => {
+    const rank = (((i - offset) % count) + count) % count;
+    return base + (rank < remainder ? 1 : 0);
+  });
 }
 
 export const CURRENCIES = [

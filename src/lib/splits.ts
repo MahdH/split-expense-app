@@ -21,7 +21,7 @@ export class SplitValidationError extends Error {}
  * the leftover cents one-by-one to the entries with the largest fractional remainder
  * (largest-remainder method), so the parts always sum exactly to `total`.
  */
-function distributeByWeight(total: number, weights: number[]): number[] {
+function distributeByWeight(total: number, weights: number[], offset = 0): number[] {
   const weightSum = weights.reduce((a, b) => a + b, 0);
   if (weightSum <= 0) {
     throw new SplitValidationError("Split weights must sum to a positive number.");
@@ -30,9 +30,11 @@ function distributeByWeight(total: number, weights: number[]): number[] {
   const floors = raw.map(Math.floor);
   let remainder = total - floors.reduce((a, b) => a + b, 0);
 
+  const n = weights.length;
+  const rank = (i: number) => (((i - offset) % n) + n) % n; // rotates who wins ties
   const order = raw
     .map((v, i) => ({ i, frac: v - Math.floor(v) }))
-    .sort((a, b) => b.frac - a.frac);
+    .sort((a, b) => b.frac - a.frac || rank(a.i) - rank(b.i));
 
   const result = [...floors];
   for (let k = 0; k < order.length && remainder > 0; k++, remainder--) {
@@ -41,17 +43,22 @@ function distributeByWeight(total: number, weights: number[]): number[] {
   return result;
 }
 
+/**
+ * `offset` rotates which participants receive the spare cents when a split does not divide
+ * evenly (pass a random one when saving an expense so it is not always the same person).
+ */
 export function computeShares(
   splitType: SplitType,
   totalAmount: number,
-  participants: ParticipantInput[]
+  participants: ParticipantInput[],
+  offset = 0
 ): ComputedShare[] {
   if (participants.length === 0) {
     throw new SplitValidationError("Select at least one participant.");
   }
 
   if (splitType === "EQUAL") {
-    const amounts = splitEvenly(totalAmount, participants.length);
+    const amounts = splitEvenly(totalAmount, participants.length, offset);
     return participants.map((p, i) => ({
       memberId: p.memberId,
       amount: amounts[i],
@@ -61,6 +68,9 @@ export function computeShares(
 
   if (splitType === "EXACT") {
     const amounts = participants.map((p) => Math.round(p.value ?? 0));
+    if (amounts.some((a) => a < 0)) {
+      throw new SplitValidationError("Amounts can't be negative.");
+    }
     const sum = amounts.reduce((a, b) => a + b, 0);
     if (sum !== totalAmount) {
       throw new SplitValidationError(
@@ -76,13 +86,16 @@ export function computeShares(
 
   if (splitType === "PERCENTAGE") {
     const bps = participants.map((p) => Math.round(p.value ?? 0));
+    if (bps.some((b) => b < 0)) {
+      throw new SplitValidationError("Percentages can't be negative.");
+    }
     const sum = bps.reduce((a, b) => a + b, 0);
     if (sum !== 10000) {
       throw new SplitValidationError(
         `Percentages must add up to 100% (got ${(sum / 100).toFixed(2)}%).`
       );
     }
-    const amounts = distributeByWeight(totalAmount, bps);
+    const amounts = distributeByWeight(totalAmount, bps, offset);
     return participants.map((p, i) => ({
       memberId: p.memberId,
       amount: amounts[i],
@@ -95,7 +108,7 @@ export function computeShares(
     if (weights.some((w) => w <= 0)) {
       throw new SplitValidationError("Each share weight must be greater than zero.");
     }
-    const amounts = distributeByWeight(totalAmount, weights);
+    const amounts = distributeByWeight(totalAmount, weights, offset);
     return participants.map((p, i) => ({
       memberId: p.memberId,
       amount: amounts[i],

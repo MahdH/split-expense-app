@@ -129,7 +129,7 @@ export function ExpenseForm({
 
     startTransition(async () => {
       try {
-        await saveExpense({
+        const result = await saveExpense({
           groupId,
           expenseId: initialData?.id,
           description,
@@ -141,6 +141,10 @@ export function ExpenseForm({
           participants,
           notes,
         });
+        if (!result.ok) {
+          setError(result.error);
+          return;
+        }
         router.push(`/g/${groupId}`);
         router.refresh();
       } catch (err) {

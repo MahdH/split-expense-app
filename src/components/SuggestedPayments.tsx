@@ -2,19 +2,27 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { recordSuggestedPayments } from "@/app/actions/payments";
+import { recordSuggestedPayments, type SuggestionMode } from "@/app/actions/payments";
 import { formatMoney } from "@/lib/money";
 import type { SimplifiedDebt } from "@/lib/balances";
+
+const sameDebts = (a: SimplifiedDebt[], b: SimplifiedDebt[]) =>
+  a.length === b.length &&
+  a.every((x) => b.some((y) => y.fromId === x.fromId && y.toId === x.toId && y.amount === x.amount));
 
 export function SuggestedPayments({
   groupId,
   currency,
-  debts,
+  fewest,
+  direct,
   members,
 }: {
   groupId: string;
   currency: string;
-  debts: SimplifiedDebt[];
+  /** The fewest payments that settle everyone. */
+  fewest: SimplifiedDebt[];
+  /** What each person owes each other person, netted per pair. */
+  direct: SimplifiedDebt[];
   members: { id: string; name: string }[];
 }) {
   const nameOf = (id: string) => members.find((m) => m.id === id)?.name ?? "Unknown";
@@ -23,6 +31,30 @@ export function SuggestedPayments({
   const [error, setError] = useState<string | null>(null);
   const [recordingIndex, setRecordingIndex] = useState<number | null>(null);
   const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [mode, setMode] = useState<SuggestionMode>("fewest");
+
+  // When both views are the same list there is nothing to choose between.
+  const showToggle = !sameDebts(fewest, direct);
+  const debts = showToggle && mode === "direct" ? direct : fewest;
+  const activeMode: SuggestionMode = debts === direct && showToggle ? "direct" : "fewest";
+
+  function pickMode(next: SuggestionMode) {
+    setMode(next);
+    setSelected(new Set());
+    setError(null);
+  }
+
+  // Shared by both record buttons: surfaces the server's message and refreshes stale lists.
+  async function record(chosen: SimplifiedDebt[]) {
+    const result = await recordSuggestedPayments(
+      groupId,
+      chosen.map((d) => ({ fromId: d.fromId, toId: d.toId, amountCents: d.amount })),
+      activeMode
+    );
+    if (!result.ok) setError(result.error);
+    setSelected(new Set());
+    router.refresh();
+  }
 
   const allSelected = selected.size > 0 && selected.size === debts.length;
 
@@ -45,15 +77,7 @@ export function SuggestedPayments({
     const debt = debts[i];
     startTransition(async () => {
       try {
-        await recordSuggestedPayments(groupId, currency, [
-          { fromId: debt.fromId, toId: debt.toId, amountCents: debt.amount },
-        ]);
-        setSelected((prev) => {
-          const next = new Set(prev);
-          next.delete(i);
-          return next;
-        });
-        router.refresh();
+        await record([debt]);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Something went wrong.");
       } finally {
@@ -69,13 +93,7 @@ export function SuggestedPayments({
     const chosen = Array.from(selected).map((i) => debts[i]);
     startTransition(async () => {
       try {
-        await recordSuggestedPayments(
-          groupId,
-          currency,
-          chosen.map((d) => ({ fromId: d.fromId, toId: d.toId, amountCents: d.amount }))
-        );
-        setSelected(new Set());
-        router.refresh();
+        await record(chosen);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Something went wrong.");
       }
@@ -98,6 +116,36 @@ export function SuggestedPayments({
   return (
     <div className="mt-3">
       {error && <p className="mb-2 text-sm font-medium text-neg">{error}</p>}
+
+      {showToggle && (
+        <div className="mb-3">
+          <div role="group" aria-label="How to settle" className="card-quiet flex gap-1 p-1">
+            {(
+              [
+                ["fewest", `Fewest payments (${fewest.length})`],
+                ["direct", `Between each pair (${direct.length})`],
+              ] as const
+            ).map(([value, label]) => (
+              <button
+                key={value}
+                type="button"
+                aria-pressed={activeMode === value}
+                onClick={() => pickMode(value)}
+                className={`flex-1 rounded-[18px] px-3 py-2 text-[13px] font-semibold transition-[background-color,box-shadow,color] ${
+                  activeMode === value ? "bg-white text-ink shadow-pill" : "text-ink-3 hover:text-ink-2"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <p className="mt-2 px-1 text-[12.5px] leading-relaxed text-ink-3">
+            {activeMode === "fewest"
+              ? "The smallest number of payments that settles everyone."
+              : "What each person owes each other person directly, after netting everything between the two of them."}
+          </p>
+        </div>
+      )}
 
       <div className="mb-2 flex items-center justify-between gap-3 px-1">
         <label className="flex items-center gap-2 text-[13px] font-semibold text-ink-2">

@@ -30,7 +30,7 @@ export function RecordPaymentForm({
     setError(null);
     startTransition(async () => {
       try {
-        await recordPayment({
+        const result = await recordPayment({
           groupId,
           fromId,
           toId,
@@ -39,6 +39,10 @@ export function RecordPaymentForm({
           date: new Date().toISOString(),
           note,
         });
+        if (!result.ok) {
+          setError(result.error);
+          return;
+        }
         setAmount("");
         setNote("");
         router.refresh();

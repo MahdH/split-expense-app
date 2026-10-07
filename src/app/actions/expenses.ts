@@ -3,7 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { toCents } from "@/lib/money";
-import { computeShares, SplitType } from "@/lib/splits";
+import { computeShares, SplitType, SplitValidationError } from "@/lib/splits";
+import { fail, MAX_CENTS, ok, type ActionResult } from "@/lib/action-result";
 import { getMemberIdForGroup } from "@/lib/identity";
 
 export interface ExpenseParticipantForm {
@@ -36,26 +37,42 @@ function toShareInputs(input: SaveExpenseInput) {
   });
 }
 
-export async function saveExpense(input: SaveExpenseInput) {
+export async function saveExpense(input: SaveExpenseInput): Promise<ActionResult> {
   const description = input.description.trim();
-  if (!description) throw new Error("Description is required.");
-  if (!(input.amount > 0)) throw new Error("Amount must be greater than zero.");
-  if (!input.paidById) throw new Error("Choose who paid.");
+  if (!description) return fail("Description is required.");
+  if (!(input.amount > 0)) return fail("Amount must be greater than zero.");
+  if (!input.paidById) return fail("Choose who paid.");
 
   const myMemberId = await getMemberIdForGroup(input.groupId);
-  if (!myMemberId) throw new Error("You need to join this group before adding an expense.");
+  if (!myMemberId) return fail("You need to join this group before adding an expense.");
 
   const amountCents = toCents(input.amount);
-  const shares = computeShares(input.splitType, amountCents, toShareInputs(input));
+  if (!(amountCents > 0)) return fail("Amount must be at least 0.01.");
+  if (amountCents > MAX_CENTS) return fail("That amount is too large.");
+
+  // Everyone involved must belong to this group, or the balances would be meaningless.
+  const involved = Array.from(new Set([input.paidById, ...input.participants.map((p) => p.memberId)]));
+  const known = await prisma.member.count({ where: { id: { in: involved }, groupId: input.groupId } });
+  if (known !== involved.length) return fail("Someone in this expense is not in the group.");
+
+  let shares;
+  try {
+    // A random offset spreads the odd cents of uneven splits across people over time.
+    const offset = Math.floor(Math.random() * Math.max(1, input.participants.length));
+    shares = computeShares(input.splitType, amountCents, toShareInputs(input), offset);
+  } catch (err) {
+    if (err instanceof SplitValidationError) return fail(err.message);
+    throw err;
+  }
 
   if (input.expenseId) {
     const existing = await prisma.expense.findUnique({
       where: { id: input.expenseId },
       select: { groupId: true, createdById: true },
     });
-    if (!existing || existing.groupId !== input.groupId) throw new Error("Expense not found.");
+    if (!existing || existing.groupId !== input.groupId) return fail("Expense not found.");
     if (existing.createdById !== myMemberId) {
-      throw new Error("You can only edit expenses you added.");
+      return fail("You can only edit expenses you added.");
     }
 
     await prisma.$transaction([
@@ -104,6 +121,7 @@ export async function saveExpense(input: SaveExpenseInput) {
   }
 
   revalidatePath(`/g/${input.groupId}`);
+  return ok;
 }
 
 export async function deleteExpense(groupId: string, expenseId: string) {

@@ -20,7 +20,7 @@ export default async function SettleUpPage({
   const group = await getGroupOrThrow(groupId);
   if (!group) notFound();
 
-  const { simplified } = getGroupBalances(group);
+  const { simplified, direct } = getGroupBalances(group);
   const members = group.members.filter((m) => !m.archived);
 
   return (
@@ -32,7 +32,8 @@ export default async function SettleUpPage({
         <SuggestedPayments
           groupId={groupId}
           currency={group.currency}
-          debts={simplified}
+          fewest={simplified}
+          direct={direct}
           members={group.members.map((m) => ({ id: m.id, name: m.name }))}
         />
       </section>
